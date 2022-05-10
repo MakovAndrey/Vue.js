@@ -3,16 +3,27 @@
         <button class="costs-btn" @click="costsInputShow=!costsInputShow"> ADD NEW COSTS +</button>
         <div v-if="costsInputShow">
         <input class="costs__input" v-model="date" placeholder="date" />
-        <input class="costs__input" v-model="category" placeholder="category" />
-        <input class="costs__input" v-model="value" placeholder="value" />
+        <CategoryForm />
+        <!-- <select v-model="category" v-if="categoryList">
+            <option v-for="(value, idx) in categoryList" :key="idx">{{value}}</option>
+        </select> -->
+        <input class="costs__input" v-model.number="value" placeholder="value" />
         <button class="save__btn" @click="onClickSave">Save</button>
         </div>
     </div>
 </template>
 
 <script>
+
+import CategoryForm from '@/components/CategoryForm.vue';
+
 export default {
     name: "AddPaymentForm",
+
+    components: {
+        CategoryForm
+    },
+    
     data() {
         return {
             date: "",
@@ -28,6 +39,7 @@ export default {
             // console.log (new Intl.DateTimeFormat('ru-RU', options).format(today));
             return new Intl.DateTimeFormat('ru-RU', {dateStyle: "short"}).format(today);
         },
+
     },
     methods: {
         onClickSave() {
@@ -36,8 +48,9 @@ export default {
                 category: this.category,
                 value: this.value,
             };
-            this.$emit("addNewPayment", data);
-            console.log(data);
+            this.$store.commit('addDataToPaymentsList', data)
+            // this.$emit("addNewPayment", data);
+            // console.log(data);
         },
     },
 };

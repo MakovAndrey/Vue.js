@@ -4,8 +4,10 @@
             <div class="title">My personal costs</div>
         </header>
         <main>
-            <AddPaymentForm @addNewPayment="addPaymentData" />
-            <PaymentsDisplay :items="paymentsList"/>
+            <AddPaymentForm  />
+            <PaymentsDisplay :items="currentElements" />
+            <div>Total Sum = {{ getFullPaymentValue }}</div>
+            <LittlePagination :cur="cur" :length="12" :n="n" @changePage="changePage"/>
         </main>
     </div>
 </template>
@@ -14,128 +16,53 @@
 
 import PaymentsDisplay from "@/components/PaymentsDisplay.vue";
 import AddPaymentForm from "@/components/AddPaymentForm.vue";
+import { mapGetters, mapMutations } from "vuex";
+import LittlePagination from '@/components/LittlePagination.vue';
 
 export default {
     name: "mainComp",
     components: {
         PaymentsDisplay,
-        AddPaymentForm
+        AddPaymentForm,
+        LittlePagination
     },
 
     data() {
         return {
-            paymentsList: [],
+            cur: 1,
+            n: 3,
         };
+        
+    },
+
+    computed: {
+        ...mapGetters(['getFullPaymentValue', 'getPaymentsList']),
+
+        currentElements(){
+            return this.getPaymentsList.slice(this.n * (this.cur - 1), this.n * (this.cur -1) + this.n)
+        }
     },
 
     methods: {
+        ...mapMutations([
+            'setPaymentsListData'
+        ]),
+
         addPaymentData(data) {
             this.paymentsList.push(data)
         },
 
-        fetchData() {
-            return [
-                {
-                    date: "28.04.2022",
-                    category: "Food",
-                    value: 169,
-                },
-                {
-                    date: "24.04.2022",
-                    category: "Transport",
-                    value: 360,
-                },
-                {
-                    date: "24.04.2022",
-                    category: "gas",
-                    value: 532,
-                },
-                {
-                    date: "28.04.2022",
-                    category: "boil",
-                    value: 169,
-                },
-                {
-                    date: "24.04.2022",
-                    category: "butter",
-                    value: 360,
-                },
-                {
-                    date: "24.04.2022",
-                    category: "chunk",
-                    value: 532,
-                },
-                {
-                    date: "28.04.2022",
-                    category: "Food",
-                    value: 169,
-                },
-                {
-                    date: "24.04.2022",
-                    category: "Transport",
-                    value: 360,
-                },
-                {
-                    date: "24.04.2022",
-                    category: "grease",
-                    value: 532,
-                },
-                {
-                    date: "28.04.2022",
-                    category: "bucket",
-                    value: 169,
-                },
-                {
-                    date: "24.04.2022",
-                    category: "Transport",
-                    value: 360,
-                },
-                {
-                    date: "24.04.2022",
-                    category: "Food",
-                    value: 532,
-                },
-                {
-                    date: "28.04.2022",
-                    category: "oil",
-                    value: 169,
-                },
-                {
-                    date: "24.04.2022",
-                    category: "gasoline",
-                    value: 360,
-                },
-                {
-                    date: "24.04.2022",
-                    category: "Food",
-                    value: 532,
-                },
-                {
-                    date: "28.04.2022",
-                    category: "costs",
-                    value: 169,
-                },
-                {
-                    date: "24.04.2022",
-                    category: "Transport",
-                    value: 360,
-                },
-                {
-                    date: "24.04.2022",
-                    category: "benchmark",
-                    value: 532,
-                },
-                {
-                    date: "28.04.2022",
-                    category: "caracal",
-                    value: 169,
-                },
-            ];
-        },
+        changePage(p){
+            this.cur = p
+            this.$store.dispatch('fetchData', p)
+        }
     },
 
     created() {
-        this.paymentsList = this.fetchData()
+        this.$store.dispatch('fetchData', this.cur)
+        // this.paymentsList = this.fetchData()
+        // this.setPaymentsListData(this.fetchData())
+        // this.$store.commit('setPaymentsListData', this.fetchData())
     },
 
     mounted() {
@@ -145,7 +72,7 @@ export default {
 </script>
 
 <style scoped>
-    .title {
-        font-size: 24px;
-    }
+.title {
+    font-size: 24px;
+}
 </style>
