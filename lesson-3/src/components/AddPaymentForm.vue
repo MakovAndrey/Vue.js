@@ -3,7 +3,7 @@
         <button class="costs-btn" @click="costsInputShow=!costsInputShow"> ADD NEW COSTS +</button>
         <div v-if="costsInputShow">
         <input class="costs__input" v-model="date" placeholder="date" />
-        <CategoryForm />
+        <CategoryForm :section='section' />
         <!-- <select v-model="category" v-if="categoryList">
             <option v-for="(value, idx) in categoryList" :key="idx">{{value}}</option>
         </select> -->
@@ -30,7 +30,8 @@ export default {
             category: "",
             value: "",
             costsInputShow: false,
-        };
+            section: "",
+        }
     },
     computed: {
         getCurrentDate() {
@@ -53,7 +54,21 @@ export default {
             // console.log(data);
         },
     },
-};
+
+    created() {
+        this.$store.dispatch('fetchCategoryList')
+    },
+
+    mounted() {
+        
+        const {value} = this.$route.query
+        if (!value) return
+        this.value = value
+        if (this.value){
+            this.onClickSave()
+        }
+    },
+}
 </script>
 
 <style  scoped>
