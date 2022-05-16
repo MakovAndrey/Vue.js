@@ -7,7 +7,7 @@
             <AddPaymentForm  />
             <PaymentsDisplay :items="currentElements" />
             <div>Total Sum = {{ getFullPaymentValue }}</div>
-            <LittlePagination :cur="cur" :length="12" :n="n" @changePage="changePage"/>
+            <LittlePagination :cur="cur" :length="getPaymentsList.length" :n="n" @changePage="changePage"/>
         </main>
     </div>
 </template>
@@ -20,7 +20,7 @@ import { mapGetters, mapMutations } from "vuex";
 import LittlePagination from '@/components/LittlePagination.vue';
 
 export default {
-    name: "mainComp",
+    name: "mainView",
     components: {
         PaymentsDisplay,
         AddPaymentForm,
@@ -30,7 +30,7 @@ export default {
     data() {
         return {
             cur: 1,
-            n: 3,
+            n: 5,
         };
         
     },
@@ -54,18 +54,20 @@ export default {
 
         changePage(p){
             this.cur = p
-            this.$store.dispatch('fetchData', p)
+            // this.$store.dispatch('fetchData', p)
         }
     },
 
     created() {
-        this.$store.dispatch('fetchData', this.cur)
+        this.$store.dispatch('fetchData')
         // this.paymentsList = this.fetchData()
         // this.setPaymentsListData(this.fetchData())
         // this.$store.commit('setPaymentsListData', this.fetchData())
     },
 
     mounted() {
+        if(!this.$route.params?.page || isNaN(this.$route.params.page)) return
+        this.cur = Number(this.$route.params.page)
     },
 };
 

@@ -24,6 +24,17 @@ export default {
     async created() {
         await this.$store.dispatch('fetchCategoryList')
     },
+
+    mounted() {
+        const {category, section} = this.$route.params
+        if(!category || !section) {
+            return 
+        }
+        this.category = category
+        if(this.category) {
+            this.$emit('onClickSave')
+        }
+    },
 };
 </script>
 
