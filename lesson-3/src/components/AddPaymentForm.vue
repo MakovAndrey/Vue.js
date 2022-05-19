@@ -1,12 +1,9 @@
 <template>
     <div class="form-wrapper">
-        <button class="costs-btn" @click="costsInputShow=!costsInputShow"> ADD NEW COSTS +</button>
-        <div v-if="costsInputShow">
+        <!-- <button class="costs-btn" @click="costsInputShow=!costsInputShow"> ADD NEW COSTS +</button> -->
+        <div>
         <input class="costs__input" v-model="date" placeholder="date" />
         <CategoryForm :section='section' />
-        <!-- <select v-model="category" v-if="categoryList">
-            <option v-for="(value, idx) in categoryList" :key="idx">{{value}}</option>
-        </select> -->
         <input class="costs__input" v-model.number="value" placeholder="value" />
         <button class="save__btn" @click="onClickSave">Save</button>
         </div>
@@ -19,6 +16,9 @@ import CategoryForm from '@/components/CategoryForm.vue';
 
 export default {
     name: "AddPaymentForm",
+    props: {
+        values: Object
+    },
 
     components: {
         CategoryForm
@@ -36,8 +36,6 @@ export default {
     computed: {
         getCurrentDate() {
             const today = new Date();
-            // const options = {timeZone: 'Europe/Moscow', year: 'numeric', month: 'long', day: 'numeric' };
-            // console.log (new Intl.DateTimeFormat('ru-RU', options).format(today));
             return new Intl.DateTimeFormat('ru-RU', {dateStyle: "short"}).format(today);
         },
 
@@ -60,6 +58,13 @@ export default {
     },
 
     mounted() {
+        if(this.values?.item) {
+            const {category, date, value} = this.values.item
+            this.value = value
+            this.date = date
+            this.category = category
+            return 
+        }
         
         const {value} = this.$route.query
         if (!value) return

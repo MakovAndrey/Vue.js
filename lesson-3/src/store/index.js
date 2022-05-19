@@ -43,10 +43,23 @@ const mutations = {
     setCategories(state, payload){
         state.categoryList = payload
     },
+
     editPaymentsList(state, payload){
-        Vue.set(state.paymentList, 0, payload)
-        state.paymentList[0] = payload
-        state.paymentList = [...state.paymentList]
+        let idx = payload[0];
+        let obj = payload[1];
+        if (payload[1].category !== "") {
+            state.paymentsList[idx].category = obj.category;
+        }
+        if (payload[1].value !== "") {
+            state.paymentsList[idx].value = obj.value;
+        }
+        if (payload[1].date !== "") {
+            state.paymentsList[idx].date = obj.date;
+        }
+    },
+
+    removeItemFromPaymentsList(state, payload) {
+        state.paymentsList.splice(payload, 1);
     },
 }
 
@@ -70,13 +83,6 @@ export default new Vuex.Store({
     mutations,
     actions: {
         fetchData({ commit }) {
-        //     return new Promise((resolve)=>{
-        //         setTimeout(()=>{
-        //             const items = localDB[`page${page}`]
-        //             resolve (items)
-        //         }, 500)
-        //         }).then((res)=> commit('setPaymentsListData', res))
-        // },
         return new Promise((resolve) => {
                 setTimeout(() => {
                     const items = [];
@@ -85,7 +91,7 @@ export default new Vuex.Store({
                             date: "23.12.2022",
                             category: "Sport",
                             value: Math.floor(Math.random(i)*1000),
-                            id: Math.floor(Math.random() * Math.floor(Math.random() * Date.now()) + i),
+                            id: Math.floor((Math.random()*100) * i),
                         });
                     }
                     resolve(items);

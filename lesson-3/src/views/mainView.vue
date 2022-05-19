@@ -4,7 +4,7 @@
             <div class="title">My personal costs</div>
         </header>
         <main>
-            <AddPaymentForm  />
+            <button @click="openModalForm">add payments</button>
             <PaymentsDisplay :items="currentElements" />
             <div>Total Sum = {{ getFullPaymentValue }}</div>
             <LittlePagination :cur="cur" :length="getPaymentsList.length" :n="n" @changePage="changePage"/>
@@ -15,7 +15,6 @@
 <script>
 
 import PaymentsDisplay from "@/components/PaymentsDisplay.vue";
-import AddPaymentForm from "@/components/AddPaymentForm.vue";
 import { mapGetters, mapMutations } from "vuex";
 import LittlePagination from '@/components/LittlePagination.vue';
 
@@ -23,8 +22,7 @@ export default {
     name: "mainView",
     components: {
         PaymentsDisplay,
-        AddPaymentForm,
-        LittlePagination
+        LittlePagination,
     },
 
     data() {
@@ -55,7 +53,11 @@ export default {
         changePage(p){
             this.cur = p
             // this.$store.dispatch('fetchData', p)
-        }
+        },
+
+        openModalForm() {
+        this.$modal.show ('addForm', {title: "Add new payment", component: 'AddPaymentForm'})
+        },
     },
 
     created() {
@@ -70,7 +72,6 @@ export default {
         this.cur = Number(this.$route.params.page)
     },
 };
-
 </script>
 
 <style scoped>
