@@ -1,9 +1,6 @@
 import Vue from "vue";
 import Router from 'vue-router';
 
-import mainView from '../views/mainView';
-import paymentsTemplateView from '../views/paymentsTemplateView';
-import errorView from '../views/errorView';
 import AddPaymentForm from '../components/AddPaymentForm.vue';
 
 Vue.use(Router)
@@ -12,17 +9,17 @@ const routes = [
     {
         path: "/dashboard/:page/",
         name: "Dashboard",
-        component: mainView,
+        component: () => import(/* webpackChunkName: "PageDashboard"*/'../views/mainView.vue'),
     },
     {
         path: '/paymentsTemplate',
         name: "Payment Tamplate",
-        component: paymentsTemplateView,
+        component: () => import(/* webpackChunkName: "PagePaymentsTemplate"*/'../views/paymentsTemplateView.vue'),
     },
     {
         path: '/error',
         name: "error",
-        component: errorView
+        component: () => import(/* webpackChunkName: "PageEror"*/'../views/errorView.vue'),
     },
     {
         path: '/add/:section/:category/',
