@@ -1,8 +1,8 @@
 <template>
   <div class="wrp">
     <div>
-    <input v-model.number="number1" type="number" />
-    <input v-model.number="number2" type="number" />
+    <input v-model.number="number1" name="number1"  />
+    <input v-model.number="number2" name="number2"  />
     </div>
 
     <hr />
@@ -11,7 +11,8 @@
       :title="operand"
       v-for="operand in operands"
       @click="calculate(operand)"
-      :key="operand">
+      :key="operand"
+      type="screenOperand">
       {{ operand }}
     </button>
     <hr />
@@ -33,10 +34,11 @@
         v-for="number in numbers"
         @click="add(number)"
         :key="number"
+        type="screenKeyboard"
       >
         {{ number }}
       </button>
-      <button @click="del"> backspace </button>
+      <button name="removeBtn" @click="del"> backspace </button>
     </div>
 
     <br />
@@ -73,10 +75,10 @@ export default {
     return{
       checked: false,
       picked: false,
-      number1: [],
-      number2: [],
-      result: 0,
-      operands: ["+", "-", "/", "*", "i/r", "exp"],
+      number1: '',
+      number2: '',
+      result: '',
+      operands: ["+", "-", "/", "*", "exp"],
       numbers: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
     };
   },
@@ -117,9 +119,9 @@ export default {
         case "/":
           this.division();
           break;
-        case "i/r":
-          this.divisionWithRem();
-          break;
+        // case "i/r":
+        //   this.divisionWithRem();
+        //   break;
         case "exp":
           this.exponentiation();
           break;
@@ -147,15 +149,15 @@ export default {
       
     },
 
-    divisionWithRem() {
-      if (this.number2 <= 0){
-        this.result = "вы ввели неправильный делитель";
-      } else {
-      let integer = Math.floor(this.number1/this.number2);
-      let remainder = this.number1 % this.number2;
-      this.result = "Целое число = "+integer + " Остаток от деления = "+remainder;
-      }
-    },
+    // divisionWithRem() {
+    //   if (this.number2 <= 0){
+    //     this.result = "вы ввели неправильный делитель";
+    //   } else {
+    //   let integer = Math.floor(this.number1/this.number2);
+    //   let remainder = this.number1 % this.number2;
+    //   this.result = "Целое число = "+integer + " Остаток от деления = "+remainder;
+    //   }
+    // },
 
     exponentiation() {
       this.result = Math.pow(this.number1, this.number2);
