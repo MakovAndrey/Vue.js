@@ -1,76 +1,74 @@
 <template>
-    <div class="context" v-if="show" :style="styles">
-        <div v-for="item in items" :key="item.text" @click="onClick(item)">
-            {{item.text}}
+    <div class="wrapper">
+        <div v-if="showForm">
+        <AddPaymentForm
+            :showContextMenuForm="showForm"
+            :activeTarget="activeTarget"/>
+        </div>
+    <div v-if="showBtns">
+        <div>
+            <v-card elevation="2">
+                <v-btn
+                    @click="startEditData"
+                    color="teal mr-2"
+                    dark
+                    elevation="2"
+                    small
+                    x-small>EDIT</v-btn>
+                <v-btn
+                    @click="removeData"
+                    color="teal"
+                    dark
+                    elevation="2"
+                    small
+                    x-small>DELETE</v-btn>
+            </v-card>
         </div>
     </div>
+</div>
 </template>
 
 <script>
 export default {
-    data () {
+    name: "EditContextMenu",
+    props: {
+        activeTarget: Number,
+        default: () => Number,
+    },
+
+    data() {
         return {
-            show: false,
-            items: [],
-            xPos: 0,
-            yPos: 0,
-        }
+        showBtns: true,
+        showForm: false,
+        };
+    },
+
+    components: {
+        AddPaymentForm: () => import("./AddPaymentForm.vue"),
     },
 
     methods: {
-        onClick (item) {
-            item.action()
+        startEditData() {
+            this.showForm = true;
+            this.showBtns = false;
         },
 
-        onShow ({items, caller}) {
-            this.items = items
-            this.show = true;
-            this.setPostion(caller)
-        },
-
-        onHide () {
-            this.show = false;
-            this.items = []
-        },
-
-        setPostion(caller){
-            const pos = caller.getBoundingClientRect()
-            this.xPos = pos.left
-            this.yPos = pos.top
+        removeData() {
+            this.$store.commit("removeItemFromPaymentsList", this.activeTarget);
+            this.$editContextMenu.hide("hide");
         },
     },
+};
 
-    computed: {
-        styles(){
-            return {
-                top: `${this.yPos + 30}px`,
-                left: `${this.xPos + 20}px`
-            }     
-        }
-    },
-
-    mounted() {
-        this.$contextMenu.EventBus.$on('show', this.onShow)
-        this.$contextMenu.EventBus.$on('hide', this.onHide)
-    },
-
-    beforeDestroy () {
-        this.$contextMenu.EventBus.$off('show', this.onShow)
-        this.$contextMenu.EventBus.$off('hide', this.onHide)
-    },
-}
 </script>
 
 <style scoped>
-.context {
-    padding: 5px;
+.wrapper {
+    display: flex;
+    flex-direction: column;
     position: absolute;
-    cursor: pointer;
-    background: rgb(183, 247, 99);
-}
-
-.edit-btn {
-    padding: 5px;
-    margin: 10px;
+    background: #efefef;
+    top: 20%;
+    left: 30%;
 }
 </style>
