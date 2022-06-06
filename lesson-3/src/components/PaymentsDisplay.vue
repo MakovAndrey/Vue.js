@@ -1,94 +1,74 @@
 <template>
-  <div class="paymentsList">
-    <div class="paymmentItem" v-for="(item, index) in items" :key="index">
-      <span>{{ item }}</span> 
-      <button class="cursor" @click="onContextMenuClick($event,item)">...</button>
-      <hr />
-    </div>
+  <div>
+    <v-data-table
+      :headers="headers"
+      :items="items"
+      :items-per-page="15"
+      class="elevation-1"
+    >
+      <template v-slot:[`item.actions`]="{ item }">
+        <v-icon small class="mr-2" @click="editModeOn(item)">
+          mdi-pencil
+        </v-icon>
+        <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
+      </template>
+    </v-data-table>
   </div>
 </template>
+
+
 
 <script>
 export default {
   name: "PaymentsDisplay",
-
+  data() {
+    return {};
+  },
   props: {
     items: {
       type: Array,
       default: () => [],
     },
   },
-
+  computed: {
+    headers() {
+      return [
+        {
+          text: "#",
+          value: "id",
+          width: "90",
+          align: "left",
+        },
+        {
+          text: "Date",
+          value: "date",
+          width: "100",
+          align: "left",
+        },
+        {
+          text: "Category",
+          value: "category",
+          width: "100",
+          align: "left",
+        },
+        {
+          text: "Value",
+          value: "value",
+          width: "150",
+          align: "left",
+        },
+        { text: "Actions", value: "actions", sortable: false },
+      ];
+    },
+  },
   methods: {
-    editItem(item) {
-      this.$modal.show('addform', {title: "Add New Payment", component: 'AddPaymentForm', props: {item}})
-      this.$contextMenu.hide()
-      let editObj = {
-        date: this.date,
-        category: this.category,
-        value: this.value,
-      };
-      this.$store.commit("editPaymentsList", [this.item, editObj]);
+    editModeOn(item) {
+      this.$emit("editModeOn", item);
     },
-
-    deleteItem() {
-      this.$store.commit("removeItemFromPaymentsList", this.item);
-      this.$contextMenu.hide()
-    },
-
-    onContextMenuClick(event, item){
-      const items =[
-        { text: "Edit", action: ()=> { this.editItem(item)} },
-        { text: "Delete item", action: ()=>{ this.deleteItem(item.id)} }
-      ]
-      this.$contextMenu.show({event,items})
+    deleteItem(item) {
+      this.$store.commit("removeItemFromPaymentsList", item);
     },
   },
 };
+
 </script>
-
-<style scoped>
-body {
-  position: absolute;
-}
-
-h3 {
-  margin: 40px 0 0;
-}
-
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-
-a {
-  color: #42b983;
-}
-
-button {
-  margin: 20px;
-  padding: 10px;
-  border-radius: 7px;
-}
-
-.pagin {
-  margin: 5px;
-}
-
-input {
-  margin: 20px;
-}
-
-.paymmentItem {
-  margin: 15px;
-}
-
-.cursor {
-  cursor: pointer;
-}
-</style>

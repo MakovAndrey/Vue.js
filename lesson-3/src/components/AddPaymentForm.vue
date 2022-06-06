@@ -1,100 +1,100 @@
 <template>
-    <div class="form-wrapper">
-        <!-- <button class="costs-btn" @click="costsInputShow=!costsInputShow"> ADD NEW COSTS +</button> -->
-        <div>
-        <input class="costs__input" v-model="date" placeholder="date" />
-        <CategoryForm :section='section' />
-        <input class="costs__input" v-model.number="value" placeholder="value" />
-        <button class="save__btn" @click="onClickSave">Save</button>
-        </div>
-    </div>
+    <v-card class="pa-8">
+
+        <v-select
+            v-model="category"
+            :items="categoryList"
+            label="Payment category"
+            dense
+            outlined>
+        </v-select>
+
+        <v-text-field
+            v-model.number="value"
+            label="Payment amount"
+            outlined
+            dense>
+        </v-text-field>
+
+        <v-text-field
+            v-model="date"
+            label="Payment date"
+            outlined
+            dense>
+        </v-text-field>
+
+        <v-btn @click="onClickSave" :ripple="false" color="teal mb-12" dark>
+        ADD <v-icon>mdi-plus</v-icon> </v-btn>
+
+    </v-card>
+
 </template>
 
 <script>
-
-import CategoryForm from '@/components/CategoryForm.vue';
-
 export default {
     name: "AddPaymentForm",
-    props: {
-        values: Object
-    },
-
-    components: {
-        CategoryForm
-    },
-    
     data() {
         return {
             date: "",
             category: "",
             value: "",
-            costsInputShow: false,
-            section: "",
-        }
+            showEditBtn: false,
+        };
     },
+
+    props: {},
     computed: {
         getCurrentDate() {
-            const today = new Date();
+        const today = new Date();
             return new Intl.DateTimeFormat('ru-RU', {dateStyle: "short"}).format(today);
         },
+    
+        categoryList() {
+            return this.$store.getters.getCategoryList;
+        },
 
+        editDataList() {
+            return this.$store.getters.getEditDataList;
+        },
     },
+
     methods: {
         onClickSave() {
+            if (this.editDataList.length === 0) {
             const data = {
                 date: this.date || this.getCurrentDate,
                 category: this.category,
                 value: this.value,
             };
-            this.$store.commit('addDataToPaymentsList', data)
-            // this.$emit("addNewPayment", data);
-            // console.log(data);
+            this.$store.commit("addDataToPaymentsList", data);
+            } else {
+            let editObj = {
+                date: this.date,
+                category: this.category,
+                value: this.value,
+            };
+            this.$store.commit("editPaymentsListItem", editObj);
+            }
         },
     },
 
-    created() {
-        this.$store.dispatch('fetchCategoryList')
+    async created() {
+        await this.$store.dispatch("fetchCategoryList");
     },
 
     mounted() {
-        if(this.values?.item) {
-            const {category, date, value} = this.values.item
-            this.value = value
-            this.date = date
-            this.category = category
-            return 
-        }
-        
-        const {value} = this.$route.query
-        if (!value) return
-        this.value = value
-        if (this.value){
-            this.onClickSave()
-        }
+    const { category, section } = this.$route.params;
+    if (!category || !section) {
+        return;
+    }
+    this.category = category;
+    const { value } = this.$route.query;
+    if (!value) return;
+    this.value = value;
+    if (this.value && this.category) {
+        this.onClickSave();
+    }
     },
-}
+};
+
 </script>
-
-<style  scoped>
-    .costs__input {
-        margin: 15px;
-        padding: 5px;
-    }
-
-    .save__btn {
-        padding: 5px;
-        cursor: pointer;
-    }
-
-    .form-wrapper {
-        margin-top: 15px;
-    }
-
-    .costs-btn {
-        padding: 10px;
-        background-color: green;
-        border-radius: 5px;
-        color: white;
-    }
-</style>

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div class="home">
         <header>
             <div class="title">My personal costs</div>
@@ -78,4 +78,4 @@ export default {
 .title {
     font-size: 24px;
 }
-</style>
+</style> -->
